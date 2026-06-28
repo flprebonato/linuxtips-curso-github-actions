@@ -35,5 +35,5 @@ jobs:
       - name: Exibindo o resultado do escaneamento
         run: |
           docker scout cves "${{ inputs['nome-imagem-docker'] }}" \
-            --only-severity critical,high \
+            --only-severities critical,high \
             --details
