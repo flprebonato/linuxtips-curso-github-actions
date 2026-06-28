@@ -1,0 +1,33 @@
+name: Download de Imagem Docker com Scan de Vulnerabilidades
+
+on:
+  workflow_dispatch:
+      inputs:
+        nome-imagem-docker:
+          description: "Informe o nome de uma imagem docker para download"
+          required: true
+          type: string
+
+jobs:
+  download-imagem-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixando a imagem docker ${{ inputs['nome-imagem-docker'] }} 
+        run: docker pull "${{ inputs['nome-imagem-docker'] }}"
+
+      - name: Listando imagens contidas no runner
+        run: docker images
+
+      - name: Escaneando vulnerabilidades da imagem baixada
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: "${{ inputs['nome-imagem-docker'] }}"
+          only-severities: critical,high
+          summary: true
+
+      - name: Exibindo o resultado do escaneamento
+        run: |
+          docker scout cves "${{ inputs['nome-imagem-docker'] }}" \
+            --only-severity critical,high \
+            --details
